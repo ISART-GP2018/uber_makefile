@@ -1,5 +1,5 @@
 # your executable to be built
-TARGET = platformer
+TARGET =
 
 # fill here your cpp files
 SRC := main.cpp \
@@ -12,7 +12,7 @@ OBJ_DIR := ./obj/
 # write your sources inside
 SRC_DIR := ./src/
 # your headers go here (you can have multiple path here)
-INC_DIR := ./includes/ ./includes/engine/ ./includes/commands/ ./includes/components/ ./includes/utils/ ./includes/utils/math
+INC_DIR := ./includes/ 
 
 # add or remove any system library you required
 SYS_LIBS := sfml-graphics sfml-window sfml-system GL
