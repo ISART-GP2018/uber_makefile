@@ -1,8 +1,8 @@
 # your executable to be built
-TARGET = target
+TARGET = platformer
 
 # fill here your cpp files
-SRC := main.cpp
+SRC := main.cpp \
 
 # the path where to find your files
 # here your target will be generated
@@ -12,7 +12,7 @@ OBJ_DIR := ./obj/
 # write your sources inside
 SRC_DIR := ./src/
 # your headers go here (you can have multiple path here)
-INC_DIR := ./include/
+INC_DIR := ./includes/ ./includes/engine/ ./includes/commands/ ./includes/components/ ./includes/utils/ ./includes/utils/math
 
 # add or remove any system library you required
 SYS_LIBS := sfml-graphics sfml-window sfml-system GL
@@ -22,6 +22,7 @@ DEP_LIBS :=
 
 OBJ := $(patsubst %.cpp,$(OBJ_DIR)%.o,$(SRC))
 DEPENDENCIES := $(OBJ:.o=.d)
+ARBO := $(sort $(dir $(DEPENDENCIES) $(OBJ_DIR)))
 
 INCLUDES := $(addprefix -I,$(INC_DIR))
 CXXFLAGS := -MMD -W -Werror -Wall -std=c++14 $(INCLUDES)
@@ -36,36 +37,36 @@ debug: CPPFLAGS += -D__DEBUG__
 debug: LDFLAGS += -g3 -D__DEBUG__
 debug: $(TARGET)
 
-all: CXXFLAGS += -O3 
+all: CXXFLAGS += -O3
 all: LDFLAGS += -O3
 all: $(TARGET)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+    $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+
+$(ARBO):
+    mkdir -p $@
 
 $(BIN_DIR):
-	mkdir -p $@
-
-$(OBJ_DIR):
-	mkdir -p $@
+    mkdir -p $@
 
 -include $(DEPENDENCIES)
 
-$(TARGET): $(BIN_DIR)$(TARGET)
+$(TARGET): $(BIN_DIR)$(TARGET) | $(ARBO)
 
 $(BIN_DIR)$(TARGET): $(OBJ) | $(BIN_DIR)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+    $(CXX) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
-$(OBJ): | $(OBJ_DIR)
+$(OBJ): | $(ARBO)
 
 clean:
-	$(RM) $(OBJ)
-	$(RM) $(DEPENDENCIES)
+    $(RM) $(OBJ)
+    $(RM) $(DEPENDENCIES)
+    $(RM) -r $(ARBO)
 
 fclean: clean
-	$(RM) $(BIN_DIR)$(TARGET)
+    $(RM) $(BIN_DIR)$(TARGET)
 
 re: fclean debug
 
 release: fclean all
-
